@@ -1,0 +1,38 @@
+CREATE TABLE candidates (
+    candidate_id INT PRIMARY KEY,
+    candidate_name VARCHAR(100),
+    party VARCHAR(50)
+);
+
+INSERT INTO candidates VALUES 
+(1, 'Alice', 'Partido A'), (2, 'João', 'Partido B'), (3, 'Joana', 'Partido C');
+
+CREATE TABLE votes (
+    vote_id INT PRIMARY KEY,
+    candidate_id INT,
+    region_id INT,
+    vote_count INT
+);
+INSERT INTO votes VALUES 
+(1, 1, 101, 500), (2, 2, 101, 300), (3, 1, 102, 200), (4, 3, 101, 150), (5, 2, 102, 250), (6, 3, 102, 400);
+
+CREATE TABLE regions (
+    region_id INT PRIMARY KEY,
+    region_name VARCHAR(100)
+);
+INSERT INTO regions VALUES 
+(101, 'Região Norte'),
+(102, 'Região Sul');
+
+SELECT * FROM candidates;
+SELECT * FROM votes;
+SELECT * FROM regions;
+
+
+SELECT SUM(vote_count) FROM votes AS total_de_votos_por_candidato GROUP BY candidate_id;
+SELECT region_id, AVG(vote_count) AS media_votos FROM votes GROUP BY region_id;
+SELECT candidate_id,region_id, MAX(vote_count) AS max_votos_por_regiao FROM votes GROUP BY candidate_id, region_id ORDER BY max_votos_por_regiao DESC;
+SELECT region_id, SUM(vote_count) AS regiao_com_maior_num_de_votos FROM votes GROUP BY region_id ORDER BY regiao_com_maior_num_de_votos DESC LIMIT 1;
+SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id ORDER BY total_votos DESC LIMIT 1;
+SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING SUM(vote_count) > 600;
+SELECT region_id, candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY region_id, candidate_id ORDER BY region_id, candidate_id;
