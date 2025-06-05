@@ -76,7 +76,7 @@ ORDER BY
     regiao_com_maior_num_de_votos DESC 
 LIMIT 1;
 
--- 4. Candidato com o maior número de votos
+-- 5. Candidato com o maior número de votos
 SELECT 
     candidate_id, 
     SUM(vote_count) AS total_votos 
@@ -88,7 +88,7 @@ ORDER BY
     total_votos DESC 
 LIMIT 1;
 
--- 5. Candidatos com mais de 600 votos
+-- 6. Candidatos com mais de 600 votos
 SELECT 
     candidate_id, 
     SUM(vote_count) AS total_votos 
@@ -99,7 +99,7 @@ GROUP BY
 HAVING 
     SUM(vote_count) > 600;
 
--- Número de votos por região e por candidato
+-- 7. Número de votos por região e por candidato
 SELECT 
     region_id, 
     candidate_id, 
@@ -117,14 +117,24 @@ ORDER BY
 
 
 -- Consultas criadas com HAVING
-SELECT candidate_id, MAX(vote_count) AS maior_voto_individual, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING MAX(vote_count) > 400 AND SUM(vote_count) < 600;
+-- Candidato com mais de 400 votos e menos de 600
+SELECT 
+    candidate_id, 
+    MAX(vote_count) AS canidato_com_mais_de_400_votos, 
+    SUM(vote_count) AS total_votos 
+FROM 
+    votes 
+GROUP BY 
+    candidate_id 
+HAVING 
+    MAX(vote_count) > 400 AND SUM(vote_count) < 600;
 
 -- Consulta criada usando HAVING e INNER JOIN
 SELECT 
-    c.candidate_id,
-    c.candidate_name,
-    c.party,
-    r.region_name,
+    candidate_id,
+    candidate_name,
+    party,
+    region_name,
     SUM(v.vote_count) AS total_votos_na_regiao
 FROM 
     votes v
