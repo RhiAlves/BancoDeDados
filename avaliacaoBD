@@ -135,7 +135,7 @@ SELECT
     candidate_name,
     party,
     region_name,
-    SUM(v.vote_count) AS total_votos_na_regiao
+    SUM(vote_count) AS total_votos_na_regiao
 FROM 
     votes v
 INNER JOIN 
@@ -143,7 +143,7 @@ INNER JOIN
 INNER JOIN 
     regions r ON v.region_id = r.region_id
 GROUP BY 
-    c.candidate_id, c.candidate_name, c.party, r.region_name
+    candidate_id, candidate_name, party, region_name
 HAVING 
     SUM(v.vote_count) > 300
 ORDER BY 
