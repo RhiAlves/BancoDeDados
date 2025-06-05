@@ -32,7 +32,6 @@ SELECT * FROM candidates;
 SELECT * FROM votes;
 SELECT * FROM regions;
 
-
 -- Questões
 -- 1. Total de votos por candidato
 SELECT 
@@ -62,7 +61,7 @@ FROM
 GROUP BY 
     candidate_id, region_id 
 ORDER BY 
-    max_votos_por_regiao DESC;
+    region_id, max_votos_por_regiao DESC;
 
 -- 4. Região com o maior número de votos
 SELECT 
@@ -116,26 +115,31 @@ ORDER BY
 
 
 
--- Consultas criadas com HAVING
--- Candidato com mais de 400 votos e menos de 600
+--Crie mais duas consultas que façam uso das funções(min, max, AVG, etc) e do group by usando having.
+-- Seleciona partidos com média de votos por região acima de 200
 SELECT 
-    candidate_id, 
-    MAX(vote_count) AS canidato_com_mais_de_400_votos, 
-    SUM(vote_count) AS total_votos 
+    c.party,
+    COUNT(DISTINCT v.region_id) AS numero_ de_regioes,
+    AVG(v.vote_count) AS media_de_votos_por_regiao
 FROM 
-    votes 
+    votes v
+INNER JOIN 
+    candidates c ON v.candidate_id = c.candidate_id
 GROUP BY 
-    candidate_id 
+    c.party
 HAVING 
-    MAX(vote_count) > 400 AND SUM(vote_count) < 600;
+    AVG(v.vote_count) > 270
+ORDER BY 
+    media_de_votos_por_regiao DESC;
 
--- Consulta criada usando HAVING e INNER JOIN
+
+-- Mostra canidatos com mais de 300 votos e seus dados em uma determinada região
 SELECT 
-    candidate_id,
-    candidate_name,
-    party,
-    region_name,
-    SUM(vote_count) AS total_votos_na_regiao
+    c.candidate_id,
+    c.candidate_name,
+    c.party,
+    r.region_name,
+    SUM(v.vote_count) AS total_votos_na_regiao
 FROM 
     votes v
 INNER JOIN 
@@ -143,7 +147,7 @@ INNER JOIN
 INNER JOIN 
     regions r ON v.region_id = r.region_id
 GROUP BY 
-    candidate_id, candidate_name, party, region_name
+    c.candidate_id, c.candidate_name, c.party, r.region_name
 HAVING 
     SUM(v.vote_count) > 300
 ORDER BY 
