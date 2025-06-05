@@ -30,12 +30,17 @@ SELECT * FROM regions;
 
 -- Total de votos por candidato
 SELECT SUM(vote_count) FROM votes AS total_de_votos_por_candidato GROUP BY candidate_id;
---
+-- Média de votos por região 
 SELECT region_id, AVG(vote_count) AS media_votos FROM votes GROUP BY region_id;
+-- Candidatos com o maior número de votos em uma única região
 SELECT candidate_id,region_id, MAX(vote_count) AS max_votos_por_regiao FROM votes GROUP BY candidate_id, region_id ORDER BY max_votos_por_regiao DESC;
+-- Região com o maior número de votos
 SELECT region_id, SUM(vote_count) AS regiao_com_maior_num_de_votos FROM votes GROUP BY region_id ORDER BY regiao_com_maior_num_de_votos DESC LIMIT 1;
+-- Candidato com o maior número de votos
 SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id ORDER BY total_votos DESC LIMIT 1;
+-- Candidatos com mais de 600 votos
 SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING SUM(vote_count) > 600;
+-- 
 SELECT region_id, candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY region_id, candidate_id ORDER BY region_id, candidate_id;
 
 -- Consultas criadas com HAVING
