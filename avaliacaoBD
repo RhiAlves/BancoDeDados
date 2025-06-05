@@ -7,15 +7,6 @@ CREATE TABLE candidates (
 INSERT INTO candidates VALUES 
 (1, 'Alice', 'Partido A'), (2, 'João', 'Partido B'), (3, 'Joana', 'Partido C');
 
-CREATE TABLE votes (
-    vote_id INT PRIMARY KEY,
-    candidate_id INT,
-    region_id INT,
-    vote_count INT
-);
-INSERT INTO votes VALUES 
-(1, 1, 101, 500), (2, 2, 101, 300), (3, 1, 102, 200), (4, 3, 101, 150), (5, 2, 102, 250), (6, 3, 102, 400);
-
 CREATE TABLE regions (
     region_id INT PRIMARY KEY,
     region_name VARCHAR(100)
@@ -24,12 +15,24 @@ INSERT INTO regions VALUES
 (101, 'Região Norte'),
 (102, 'Região Sul');
 
+CREATE TABLE votes (
+    vote_id INT PRIMARY KEY,
+    candidate_id INT,
+    region_id INT,
+    vote_count INT,
+    FOREIGN KEY (candidate_id) REFERENCES candidates(candidate_id),
+    FOREIGN KEY (region_id) REFERENCES regions(region_id)
+);
+
+INSERT INTO votes VALUES 
+(1, 1, 101, 500), (2, 2, 101, 300), (3, 1, 102, 200), (4, 3, 101, 150), (5, 2, 102, 250), (6, 3, 102, 400);
+
 SELECT * FROM candidates;
 SELECT * FROM votes;
 SELECT * FROM regions;
 
 -- Total de votos por candidato
-SELECT SUM(vote_count) FROM votes AS total_de_votos_por_candidato GROUP BY candidate_id;
+SELECT candidate_id, SUM(vote_count) AS total_de_votos_por_candidato FROM votes GROUP BY candidate_id;
 -- Média de votos por região 
 SELECT region_id, AVG(vote_count) AS media_votos FROM votes GROUP BY region_id;
 -- Candidatos com o maior número de votos em uma única região
@@ -45,3 +48,23 @@ SELECT region_id, candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP 
 
 -- Consultas criadas com HAVING
 SELECT candidate_id, MAX(vote_count) AS maior_voto_individual, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING MAX(vote_count) > 400 AND SUM(vote_count) < 600;
+
+-- Consulta criada usando HAVING e INNER JOIN
+SELECT 
+    c.candidate_id,
+    c.candidate_name,
+    c.party,
+    r.region_name,
+    SUM(v.vote_count) AS total_votos_na_regiao
+FROM 
+    votes v
+INNER JOIN 
+    candidates c ON v.candidate_id = c.candidate_id
+INNER JOIN 
+    regions r ON v.region_id = r.region_id
+GROUP BY 
+    c.candidate_id, c.candidate_name, c.party, r.region_name
+HAVING 
+    SUM(v.vote_count) > 300
+ORDER BY 
+    total_votos_na_regiao DESC;
