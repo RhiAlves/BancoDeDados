@@ -28,11 +28,15 @@ SELECT * FROM candidates;
 SELECT * FROM votes;
 SELECT * FROM regions;
 
-
+-- Total de votos por candidato
 SELECT SUM(vote_count) FROM votes AS total_de_votos_por_candidato GROUP BY candidate_id;
+--
 SELECT region_id, AVG(vote_count) AS media_votos FROM votes GROUP BY region_id;
 SELECT candidate_id,region_id, MAX(vote_count) AS max_votos_por_regiao FROM votes GROUP BY candidate_id, region_id ORDER BY max_votos_por_regiao DESC;
 SELECT region_id, SUM(vote_count) AS regiao_com_maior_num_de_votos FROM votes GROUP BY region_id ORDER BY regiao_com_maior_num_de_votos DESC LIMIT 1;
 SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id ORDER BY total_votos DESC LIMIT 1;
 SELECT candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING SUM(vote_count) > 600;
 SELECT region_id, candidate_id, SUM(vote_count) AS total_votos FROM votes GROUP BY region_id, candidate_id ORDER BY region_id, candidate_id;
+
+-- Consultas criadas com HAVING
+SELECT candidate_id, MAX(vote_count) AS maior_voto_individual, SUM(vote_count) AS total_votos FROM votes GROUP BY candidate_id HAVING MAX(vote_count) > 400 AND SUM(vote_count) < 600;
