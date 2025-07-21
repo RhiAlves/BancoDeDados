@@ -1,4 +1,4 @@
--- Tabelas
+-- Tabelas e dados inseridos
 create table vendedor (
  CodVdd integer primary key,
  CPF numeric(11) not null unique,
@@ -79,11 +79,11 @@ primary key(CodPro, NumVen),
 );
 
 insert into item_venda (CodPro, NumVen, vUnitario, Qtd) values
-(1001, 5001, 899.90, 1),
-(1003, 5001, 129.90, 1),
-(1002, 5002, 2999.90, 1),
-(1001, 5003, 899.90, 2),
-(1004, 5003, 1999.90, 1),
+(1001, 5001, 8999.90, 2),
+(1003, 5001, 299.90, 5),
+(1002, 5002, 129.90, 1),
+(1001, 5003, 8999.90, 2),
+(1004, 5003, 19999.90, 1),
 (1003, 5004, 129.90, 1);
 
 create table veiculo (
@@ -138,3 +138,14 @@ select m.Nome as motorista,
 from entrega e
 right join motorista m on e.CodMot = m.CodMot
 group by m.Nome;
+
+-- Produtos e vendas
+select p.Nome as produto,
+       p.Preco as preco,
+       iv.Qtd as quantidade_vendida,
+       v.NumVen as numero_venda,
+       v.Valor_Total
+from produto p
+left join item_venda iv on p.CodPro = iv.CodPro
+left join venda v on iv.NumVen = v.NumVen
+order by p.Preco desc;
