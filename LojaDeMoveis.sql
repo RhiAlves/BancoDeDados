@@ -152,13 +152,11 @@ left join item_venda iv on p.CodPro = iv.CodPro
 left join venda v on iv.NumVen = v.NumVen
 order by p.Preco desc;
 
--- Informações sobre vendedores, mesmo os que não venderam
-select vd.Nome as vendedor,
-       vd.CodVdd as codigo,
-       vd.V_comissao as comissão,
-       count(v.NumVen) as quantidade_vendida
-from vendedor vd
-left join vendas v on vd.CodVdd = v.CodVdd
-group by vd.Nome;
-
 -- Veiculos, inclusive os que não foram utilizados
+-- Veiculos, inclusive os que não foram utilizados
+select ve.Placa as placa_veiculo,
+       ve.Capacidade as capacidade,
+       count(e.CodMot) as entregas
+from veiculo ve
+left join entrega e on ve.Placa = e.Placa
+group by ve.Placa;
