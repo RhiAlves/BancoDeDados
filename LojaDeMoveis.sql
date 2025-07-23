@@ -10,7 +10,8 @@ create table vendedor (
 insert into vendedor (CodVdd, CPF, V_comissao, Nome, Endereço) values
 (1, 12345678901, 5.50, 'Gato Amora', 'Rua das Flores, 123 - Centro'),
 (2, 98765432109, 6.00, 'Pepi', 'Av. Canarinho, 456 - Jardim'),
-(3, 45678912345, 4.75, 'Pink', 'Rua Feliz, 789');
+(3, 45678912345, 4.75, 'Pink', 'Rua Feliz, 789'),
+(4, 79990567388, 4.00, 'Julio','Casa grande,34');
  
 create table cliente (
  CodCli integer primary key,
@@ -21,10 +22,10 @@ create table cliente (
 );
 
 insert into cliente (CodCli, Nome, Tel, CPF, Email) values
-(101, 'Julia', '4198765432', 11122233344, 'julinhaa@email.com'),
-(102, 'Thor', '1191234567', 55566677788, 'trovaoo@email.com'),
-(103, 'Mel', '2196543210', 99988877766, 'mel.l@email.com'),
-(104, 'Felipo', '3199876543', 44433322211, 'opilef@email.com');
+(11, 'Julia', '4198765432', 11122233344, 'julinhaa@email.com'),
+(12, 'Thor', '1191234567', 55566677788, 'trovaoo@email.com'),
+(13, 'Mel', '2196543210', 99988877766, 'mel.l@email.com'),
+(14, 'Felipo', '3199876543', 44433322211, 'opilef@email.com');
 
 create table motorista (
  CodMot integer primary key,
@@ -49,10 +50,10 @@ create table venda (
 );
 
 insert into venda (NumVen, Valor_Total, CodVdd, CodCli) values
-(5001, 1029.80, 1, 101),
-(5002, 2999.90, 2, 102),
-(5003, 3999.80, 1, 103),
-(5004, 129.90, 3, 104);
+(5001, 1029.80, 1, 11),
+(5002, 2999.90, 2, 12),
+(5003, 3999.80, 1, 13),
+(5004, 129.90, 3, 14);
 
 create table produto (
  CodPro integer primary key,
@@ -93,7 +94,8 @@ create table veiculo (
 INSERT INTO veiculo (placa, Capacidade) VALUES
 ('SKZ1234', 500),
 ('BTS5678', 1000),
-('GOT0007', 750);
+('GOT0007', 750),
+('TXT910', 128);
 
 create table entrega (
  Hora time not null,
@@ -109,10 +111,10 @@ create table entrega (
 );
 
 insert into entrega (Hora, Data, NumVen, Placa, CodCli, CodMot) values
-('14:30:00', '2023-05-10', 5001, 'SKZ1234', 101, 501),
-('09:15:00', '2023-05-11', 5002, 'BTS5678', 102, 502),
-('16:45:00', '2023-05-12', 5003, 'GOT0007', 103, 501),
-('11:00:00', '2023-05-13', 5004, 'SKZ1234', 104, 501);
+('14:30:00', '2023-05-10', 5001, 'SKZ1234', 11, 501),
+('09:15:00', '2023-05-11', 5002, 'BTS5678', 12, 502),
+('16:45:00', '2023-05-12', 5003, 'GOT0007', 13, 501),
+('11:00:00', '2023-05-13', 5004, 'SKZ1234', 14, 501);
 
 -- Consultas gerais
 select * from vendedor;
@@ -132,20 +134,31 @@ from venda v
  join vendedor vd on v.CodVdd = vd.CodVdd
  join cliente c on v.CodCli = c.CodCli;
  
--- Motoristas e entregas realizadas
+-- Motoristas e entregas realizadas ou não
 select m.Nome as motorista, 
        COUNT(e.NumVen) as total_de_entregas
-from entrega e
+from entrega e 
 right join motorista m on e.CodMot = m.CodMot
 group by m.Nome;
 
--- Produtos e vendas
+-- Produtos e vendas, incluindo os não vendidos
 select p.Nome as produto,
        p.Preco as preco,
        iv.Qtd as quantidade_vendida,
        v.NumVen as numero_venda,
        v.Valor_Total
-from produto p
+from produto p 
 left join item_venda iv on p.CodPro = iv.CodPro
 left join venda v on iv.NumVen = v.NumVen
 order by p.Preco desc;
+
+-- Informações sobre vendedores, mesmo os que não venderam
+select vd.Nome as vendedor,
+       vd.CodVdd as codigo,
+       vd.V_comissao as comissão,
+       count(v.NumVen) as quantidade_vendida
+from vendedor vd
+left join vendas v on vd.CodVdd = v.CodVdd
+group by vd.Nome;
+
+-- Veiculos, inclusive os que não foram utilizados
