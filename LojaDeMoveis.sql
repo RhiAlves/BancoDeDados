@@ -136,7 +136,7 @@ from venda v
  
 -- Motoristas e entregas realizadas ou não
 select m.Nome as motorista, 
-       COUNT(e.NumVen) as total_de_entregas
+       count(e.NumVen) as total_de_entregas
 from entrega e 
 right join motorista m on e.CodMot = m.CodMot
 group by m.Nome;
@@ -153,10 +153,26 @@ left join venda v on iv.NumVen = v.NumVen
 order by p.Preco desc;
 
 -- Veiculos, inclusive os que não foram utilizados
--- Veiculos, inclusive os que não foram utilizados
 select ve.Placa as placa_veiculo,
        ve.Capacidade as capacidade,
        count(e.CodMot) as entregas
 from veiculo ve
 left join entrega e on ve.Placa = e.Placa
 group by ve.Placa;
+
+-- Clientes e compras realizadas
+select c.Nome as cliente,
+       v.NumVen as numero_venda,
+       v.Valor_total as valor_total
+from cliente c
+join venda v on c.CodCli = v.CodCli
+order by c.Nome desc;
+
+-- Apenas os produtos vendidos
+select p.Nome as produto,
+       p.Preco as preco,
+       iv.NumVen as numero_venda,
+       iv.Qtd as quantidade_vendida
+from produto p 
+join item_venda iv on p.CodPro = iv.CodPro
+order by iv.NumVen;
