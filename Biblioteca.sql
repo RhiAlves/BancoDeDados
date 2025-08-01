@@ -3,7 +3,7 @@ create table alunos (
     nome VARCHAR(100),
     curso VARCHAR(100)
 );
- insert into alunos (id_aluno, nome, curso) values 
+ insert into alunos (id_aluno, nome, curso) values
  (4002, 'Amora', 'Informática'),
  (4003, 'Pepi', 'Música'),
  (4004, 'Leticia', 'Informática'),
@@ -38,7 +38,7 @@ create table emprestimos (
     foreign key (livro_id) REFERENCES livros(id_livros)
 );
 
-insert into emprestimos (id, aluno_id, livro_id, data_emprestimo, data_devolucao) values 
+insert into emprestimos (id, aluno_id, livro_id, data_emprestimo, data_devolucao) values
 (1, 4002, 578, '2025-06-25', '2025-07-08'),
 (2, 4007, 709, '2025-05-04', null),
 (3, 4005, 123, '2025-07-03', '2025-07-18'),
@@ -62,4 +62,43 @@ select a.nome as alunos,
        order by livros_emprestados desc;
 
 -- livros mais emprestados
+select l.titulo as livro,
+       count(e.livro_id) as total_emprestimos
+from livros l
+left join emprestimos e on l.id_livros = e.livro_id
+group by l.titulo
+order by total_emprestimos desc;
+
+-- quantidade total de livros emprestados pelos alunos de cada curso
+select a.curso,
+       count(e.id) as total_livros_emprestados
+from alunos a 
+left join emprestimos e on a.id_aluno = e.aluno_id
+group by a.curso
+order by total_livros_emprestados desc;
+
+-- aluno que mais emprestou livros
+
+       
+
+-- livros que ainda não foram devolvidos
+select e.id as id_emprestimo,
+       l.titulo as livros,
+       a.nome as aluno,
+       e.data_emprestimo
+from emprestimos e 
+join livros l on e.livro_id = l.id_livros
+join alunos a on e.aluno_id = a.id_aluno
+where e.data_devolucao is null;
+
+-- média de livros emprestados por aluno
+select a.id_aluno, 
+       count(e.id) as total_emprestimos,
+       avg(total_emprestimos) as media_livros
+from aluno a 
+left join emprestimos e on a.id_aluno = e.aluno_id
+group by a.id_aluno;
+
+-- categorias de livros mais populares
+
 
