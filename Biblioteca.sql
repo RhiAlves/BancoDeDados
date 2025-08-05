@@ -78,7 +78,13 @@ group by a.curso
 order by total_livros_emprestados desc;
 
 -- aluno que mais emprestou livros
-
+select a.nome as aluno,
+       COUNT(e.id) AS total_emprestimos
+from alunos a
+left join emprestimos e on a.id_aluno = e.aluno_id
+group by a.nome
+order by total_emprestimos desc
+limit 1;
        
 
 -- livros que ainda não foram devolvidos
@@ -92,13 +98,18 @@ join alunos a on e.aluno_id = a.id_aluno
 where e.data_devolucao is null;
 
 -- média de livros emprestados por aluno
-select a.id_aluno, 
-       count(e.id) as total_emprestimos,
-       avg(total_emprestimos) as media_livros
-from aluno a 
-left join emprestimos e on a.id_aluno = e.aluno_id
-group by a.id_aluno;
+select avg(emprestimos_por_aluno.total) as media_livros_por_aluno
+from (
+    select count(e.id) as total
+    from alunos a
+    left join emprestimos e on a.id_aluno = e.aluno_id
+    group by a.id_aluno
+) as emprestimos_por_aluno;
 
 -- categorias de livros mais populares
-
-
+select l.categoria,
+       COUNT(e.id) as emprestimos
+from livros l
+left join emprestimos e on l.id_livros = e.livro_id
+group by l.categoria
+order by emprestimos desc;
