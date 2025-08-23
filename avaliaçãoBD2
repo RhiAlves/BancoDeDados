@@ -1,0 +1,113 @@
+CREATE TABLE Cliente (
+    id_cliente SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100)
+);
+
+insert into Cliente (id_cliente, nome, cpf, telefone, email) values
+(1, 'Amora Amorinha', '123.456.789-00', '(11) 99009-9999', 'lindo.amora@email.com'),
+(2, 'Peu Stein', '987.654.321-00', '(83) 83788-8688', 'peu.robo@email.com'),
+(3, 'Beto Lego', '456.789.123-00', '(21) 77777-71717', 'beto.robo@email.com'),
+(4, 'Pink Pie', '321.654.987-00', '(11) 66729-7387', 'pink.linda@email.com'),
+(5, 'Peppi Peperone', '789.123.456-00', '(54) 55555-5555', 'pepe.roni@email.com');
+
+
+CREATE TABLE Veiculo (
+    id_veiculo SERIAL PRIMARY KEY,
+    modelo VARCHAR(100) NOT NULL,
+    marca VARCHAR(50),
+    ano INT,
+    categoria VARCHAR(50), -- SUV, Sedan, Hatch, etc.
+    preco_diaria NUMERIC(10,2),
+    disponivel BOOLEAN DEFAULT TRUE
+);
+
+insert into Veiculo (id_veiculo, modelo, marca, ano, categoria, preco_diaria, disponivel) values
+(1, 'Civic', 'Honda', 2023, 'Sedan', 150.00, true),
+(2, 'Corolla', 'Toyota', 2022, 'Sedan', 140.00, true),
+(3, 'HR-V', 'Honda', 2023, 'SUV', 200.00, false),
+(4, 'CR-V', 'Honda', 2022, 'SUV', 220.00, true),
+(5, 'Onix', 'Chevrolet', 2023, 'Hatch', 120.00, true),
+(6, 'T-Cross', 'Volkswagen', 2022, 'SUV', 180.00, false),
+(7, 'Compass', 'Jeep', 2022, 'SUV', 250.00, true);
+
+CREATE TABLE Aluguel (
+    id_aluguel SERIAL PRIMARY KEY,
+    id_cliente INT REFERENCES Cliente(id_cliente),
+    id_veiculo INT REFERENCES Veiculo(id_veiculo),
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    valor_total NUMERIC(10,2)
+);
+
+INSERT INTO Aluguel (id_aluguel, id_cliente, id_veiculo, data_inicio, data_fim, valor_total) VALUES
+(001, 1, 3, '2024-01-15', '2024-01-20', 1000.00),   
+(002, 2, 1, '2024-01-10', '2024-01-12', 300.00),    
+(003, 3, 4, '2024-02-01', '2024-02-10', 1980.00),   
+(004, 4, 6, '2024-02-15', '2024-02-20', 900.00),   
+(005, 5, 7, '2024-03-01', '2024-03-05', 1000.00);   
+
+-- consultas gerais
+select * from Cliente;
+select * from Veiculo;
+select * from Aluguel;
+
+-- visões
+-- nome do cliente e o modelo do veículo que ele alugou
+create view clientes_veiculos as
+select c.nome as cliente, v.modelo as veiculo
+from Aluguel a
+join Cliente c on a.id_cliente = c.id_cliente
+join Veiculo v on a.id_veiculo = v.id_veiculo; 
+
+-- alugeis acima de 1000 reais
+create VIEW alugueis_acima_1000 as
+select c.nome as cliente,
+       v.modelo as veiculo,
+       a.valor_total as valor_total
+from Aluguel a
+join Cliente c on a.id_cliente = c.id_cliente
+join Veiculo v on a.id_veiculo = v.id_veiculo
+where a.valor_total > 1000.00;
+
+-- veículos que nunca foram alugados
+create view veiculos_nao_alugados as
+select v.*
+from Veiculo v
+left join Aluguel a on v.id_veiculo = a.id_veiculo
+where a.id_aluguel is null;
+
+-- clientes que já alugaram SUVs
+create view clientes_suv as
+select distinct c.nome as nome,
+       c.email as email
+from Aluguel a
+join Cliente c ON a.id_cliente = c.id_cliente
+join Veiculo v ON a.id_veiculo = v.id_veiculo
+where v.categoria = 'SUV';
+
+-- valor total de aluguéis
+create view total_alugueis as
+select sum(valor_total) as aluguel_total
+from Aluguel;
+
+--  veículos alugados por categoria
+create view alugueis_por_categoria as
+select v.categoria,
+       count(a.id_aluguel) as quantidade_alugueis
+from Veiculo v
+left join Aluguel a on v.id_veiculo = a.id_veiculo
+group by v.categoria
+order by quantidade_alugueis desc;
+
+
+
+-- consulta das visões
+select * from clientes_veiculos;
+select * from alugueis_acima_1000;
+select * from veiculos_nao_alugados;
+select * from clientes_suv;
+select * from total_alugueis;
+select * from alugueis_por_categoria;
