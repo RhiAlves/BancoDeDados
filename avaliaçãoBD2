@@ -102,7 +102,73 @@ left join Aluguel a on v.id_veiculo = a.id_veiculo
 group by v.categoria
 order by quantidade_alugueis desc;
 
+-- 5 clientes que mais gastaram
+create view 5_clientes_com_mais_gastos as
+select c.nome, 
+       sum(a.valor_total) as gasto_total
+from Aluguel a
+join Cliente c on a.id_cliente = c.id_cliente
+group by c.id_cliente, c.nome
+order by total_gasto desc
+limit 5;
 
+-- a média de valor dos aluguéis por cliente.
+create view media_aluguel_por_cliente as
+select c.nome,
+       avg(a.valor_total) as media_aluguel
+from Aluguel a
+join Cliente c ON a.id_cliente = c.id_cliente
+group by c.id_cliente, c.nome
+order by media_valor_aluguel desc;
+
+-- faturamento mensal 
+crate view faturamento_mensal as
+select TO_CHAR(data_inicio, 'YYYY-MM') as ano_mes,
+    sum(valor_total) as faturamento_total
+from Aluguel
+group by TO_CHAR(data_inicio, 'YYYY-MM')
+order by ano_mes;
+
+-- aluguel detalhado
+create view alugueis_detalhados as
+select c.nome as cliente,
+       v.modelo as modelo_veiculo,
+       a.data_inicio,
+       a.data_fim,
+       a.valor_total
+from Aluguel a
+join Cliente c on a.id_cliente = c.id_cliente
+join Veiculo v on a.id_veiculo = v.id_veiculo;
+
+-- faturamento total por categoria de veículo.
+create view faturamento_por_categoria as
+select v.categoria,
+       sum(a.valor_total) as faturamento_total
+from Aluguel a
+join Veiculo v ON a.id_veiculo = v.id_veiculo
+group by v.categoria
+order by faturamento_total desc;
+
+-- clientes que já gastaram mais de R$ 5000,00
+crate view clientes_gasto_acima_5000 as
+select c.nome,
+       sum(a.valor_total) as total_gasto
+from Aluguel a
+join Cliente c ON a.id_cliente = c.id_cliente
+group by c.id_cliente, c.nome
+having sum(a.valor_total) > 5000.00
+order by total_gasto desc;
+
+-- 3 veículos mais alugados
+create view 3_veiculos_mais_alugados as
+select  v.modelo,
+        v.marca,
+        count(a.id_aluguel) as vezes_alugado
+from Veiculo v
+join Aluguel a ON v.id_veiculo = a.id_veiculo
+group by v.id_veiculo, v.modelo, v.marca
+order by vezes_alugado desc
+limit 3;
 
 -- consulta das visões
 select * from clientes_veiculos;
@@ -111,3 +177,10 @@ select * from veiculos_nao_alugados;
 select * from clientes_suv;
 select * from total_alugueis;
 select * from alugueis_por_categoria;
+select * from 5_clientes_com_mais_gastos;
+select * from media_aluguel_por_cliente;
+select * from faturamento_mensal;
+select * from alugueis detalhados;
+select * from faturamento_por_categoria;
+select * from clientes_gasto_acima_5000;
+select * from 3_veiculos_mais_alugados;
