@@ -1,0 +1,51 @@
+create table Funcionario(
+id_funcionario int primary key,
+nome varchar(50) not null,
+contato varchar(50),
+funcao varchar(30) not null
+);
+
+create table Cliente(
+id_cliente int primary key,
+nome varchar not null,
+contato varchar not null
+);
+
+create table Receita(
+id_receita int primary key,
+ingredientes varchar not null,
+preparo varchar not null,
+rendimento varchar(50) not null
+);
+
+create table Produto(
+id_produto int primary key,
+nome_produto varchar not null,
+descricao_produto varchar not null,
+disponivel boolean,
+quantidade_estoque int not null,
+id_receita int,
+foreign key(id_receita) references Receita(id_receita)
+);
+
+create table Pedido(
+cod_pedido int primary key,
+id_itemPedido int,
+data_pedido date,
+id_funcionario int,
+id_cliente int,
+foreign key (id_funcionario) references Funcionario(id_funcionario),
+foreign key (id_cliente) references Cliente(id_cliente)
+);
+
+
+create table ItemPedido(
+id_itemPedido int primary key,
+cod_pedido int,
+produto_pedido int,
+valor_unitario float not null,
+quantidade int not null,
+foreign key (produto_pedido) references Produto(id_produto),
+foreign key (cod_pedido) references Pedido(cod_pedido)
+);
+
